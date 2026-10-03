@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>About - SugarTrack Pro</title>
-            <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
-
+    
     <script>
         const savedTheme = localStorage.getItem('theme') || 'system';
         const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -16,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
+            <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
+
 
     <style>
         /* --- LANDING PAGE CORE & SMOOTH SCROLL --- */
@@ -246,11 +247,11 @@
             <div class="page-container">
                 
                 <!-- Hero Section -->
-                <section class="hero reveal">
-                    <div class="hero-badge">About SugarTrack vr1.0</div>
-                    <h1>Redefining Glucose<br>Management.</h1>
-                    <p>A beautifully crafted, offline-first clinical tracker designed for seamless data management and intelligent health analysis. Your health, visualized.</p>
-                </section>
+<section class="hero reveal">
+    <div class="hero-badge">About SugarTrack vr1.2</div>
+    <h1>Redefining Glucose<br>Management.</h1>
+    <p>A beautifully crafted, offline-first clinical tracker designed for seamless data management and intelligent health analysis. Your health, visualized.</p>
+</section>
 
                 <!-- 3D Stats Banner -->
                 <div class="stats-banner reveal">
@@ -271,6 +272,8 @@
                             <span class="num">∞</span>
                             <span class="label">Data Exports</span>
                         </div>
+
+
                     </div>
                 </div>
 
@@ -360,6 +363,20 @@
                                 <p>Complete Dark, Light, and System modes with a robust custom Accent Color engine for true personalization.</p>
                             </div>
                         </div>
+    <div class="tilt-card feature-card">
+    <div class="card-content">
+        <div class="f-icon"><i class="ph-fill ph-google-logo"></i></div>
+        <h3>Google Drive Sync</h3>
+        <p>Securely backup and restore your clinical logs directly to your personal Google Drive account with zero cloud lock-in.</p>
+    </div>
+</div>
+                    <div class="tilt-card feature-card">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-wifi-slash"></i></div>
+                            <h3>Offline First</h3>
+                            <p>All features are fully functional without an internet connection. Your data is stored locally on your device.</p>
+                        </div>
+                    </div> 
                     </div>
                 </section>
 
@@ -371,9 +388,24 @@
                     </div>
                     <div class="changelog-wrapper reveal">
                         <div class="changelog-timeline">
+
+
+<div class="changelog-item">
+        <div class="changelog-header">
+            <span class="changelog-version">v1.2.0 Pro</span>
+            <span class="changelog-date">Current Release</span>
+        </div>
+        <ul class="changelog-notes">
+            <li>Integrated Google Drive API for secure, private cloud backups and one-click data restoration.</li>
+            <li>Added dynamic Google account avatars to the sidebar, settings, and mobile header.</li>
+            <li>Upgraded mobile header UI with stylish, tactile floating icon buttons.</li>
+            <li>Published official Privacy Policy to comply with strict Google Cloud security requirements.</li>
+        </ul>
+    </div>
+                            
                             <div class="changelog-item">
                                 <div class="changelog-header">
-                                    <span class="changelog-version">vr1.0 Pro</span>
+                                    <span class="changelog-version" style="background: var(--bg-hover); color: var(--text-main);">vr1.0 Pro</span>
                                     <span class="changelog-date">Current Release</span>
                                 </div>
                                 <ul class="changelog-notes">

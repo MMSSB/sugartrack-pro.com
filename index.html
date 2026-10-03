@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SugarTrack - Master Your Glucose</title>
-            <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
-
+    
     <script>
         const savedTheme = localStorage.getItem('theme') || 'system';
         const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -16,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
+            <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
+
 
     <style>
         /* --- LANDING PAGE CORE --- */
@@ -206,16 +207,16 @@
 
             <!-- Hero Section -->
             <section class="hero-section">
-                <div class="reveal">
-                    <div class="hero-badge">v1.0.0 Pro Architecture</div>
-                    <h1 class="hero-title">Master Your Glucose.<br>Master Your Life.</h1>
-                    <p class="hero-subtitle">The most beautifully crafted, fully responsive clinical tracker. Designed for absolute privacy, built for offline speed.</p>
-                    
-                    <div class="hero-actions">
-                        <a href="app/dashboard" class="btn-launch btn-large">Launch App</a>
-                        <a href="about.html" class="btn-outline btn-large" style="background: var(--bg-dashboard); text-decoration: none;">Learn More</a>
-                    </div>
-                </div>
+  <div class="reveal">
+    <div class="hero-badge">vr1.2.0 Pro Architecture</div>
+    <h1 class="hero-title">Master Your Glucose.<br>Master Your Life.</h1>
+    <p class="hero-subtitle">The most beautifully crafted, fully responsive clinical tracker. Designed for absolute privacy, built for offline speed.</p>
+    
+    <div class="hero-actions">
+        <a href="app/dashboard" class="btn-launch btn-large">Launch App</a>
+        <a href="about" class="btn-outline btn-large" style="background: var(--bg-dashboard); text-decoration: none;">Learn More</a>
+    </div>
+</div>
 
                 <div class="hero-mockup-wrapper reveal">
                     <div class="float-ui fui-left"><i class="ph-fill ph-check-circle"></i> 110 mg/dL Normal</div>
@@ -223,11 +224,10 @@
                     
                     <div class="hero-mockup">
                         <div class="mockup-inner">
+                           <img src="images/vr.png" alt="SugarTrack Mockup" style="  width: 100%;  object-fit: cover; object-position: center;">
                             <!-- <i class="ph-fill ph-layout"></i>
                             <h2>Square UI Engine</h2>
                             <p>Experience the fluid interface live</p> -->
-                                                       <img src="images/vr.png" alt="SugarTrack Mockup" style="  width: 100%;  object-fit: cover; object-position: center;">
-
                         </div>
                     </div>
                 </div>
@@ -317,6 +317,20 @@
                             <p>The codebase is primed for next-gen features, including AI dietary suggestions and continuous glucose monitor syncing.</p>
                         </div>
                     </div>
+                    <div class="tilt-card reveal">
+    <div class="card-content">
+        <div class="f-icon"><i class="ph-fill ph-google-logo"></i></div>
+        <h3>Google Drive Sync</h3>
+        <p>Securely backup and restore your clinical logs directly to your personal Google Drive account with zero cloud lock-in.</p>
+    </div>
+</div>
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-wifi-slash"></i></div>
+                            <h3>Offline First</h3>
+                            <p>All features are fully functional without an internet connection. Your data is stored locally on your device.</p>
+                        </div>
+                    </div>                  
                 </div>
             </section>
 
