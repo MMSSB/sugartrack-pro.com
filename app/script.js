@@ -684,9 +684,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             
             // Safe index retrieval
-            const editIndexInput = document.getElementById('editIndex');
-            const idx = editIndexInput && editIndexInput.value ? parseInt(editIndexInput.value, 10) : -1;
-            
+            // const editIndexInput = document.getElementById('editIndex');
+            // const idx = editIndexInput && editIndexInput.value ? parseInt(editIndexInput.value, 10) : -1;
+            // Safe index retrieval
+const editIndexInput = document.getElementById('editIndex');
+const idx = editIndexInput && editIndexInput.value ? parseInt(editIndexInput.value, 10) : -1;
             const updatedReading = {
                 date: document.getElementById('logDate').value,
                 time: document.getElementById('logTime').value,
