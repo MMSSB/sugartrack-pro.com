@@ -6,9 +6,9 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>All Logs - SugarTrack</title>
-        <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
 
     <script src="theme.js"></script>
+        <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="style.css">
     <script src="load-page.js"></script>
         <!-- Export Libraries -->
+                  <!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="google.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Your new export script -->
@@ -384,6 +387,30 @@
                     <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
                 </div>
             </div>
+                        <!-- NEW: Mobile Google Drive Dropdown -->
+    <div class="drive-dropdown-container">
+        <!-- We use 'user-avatar-target' so google.js automatically injects the profile image here -->
+        <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
+            <i class="ph ph-google-logo"></i>
+        </button>
+        <div class="drive-dropdown-menu" id="mobileDriveMenu">
+            <!-- Status Label -->
+            <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
+                <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
+            </div>
+            
+            <!-- Actions -->
+            <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="SugarTrackGoogle.signIn(); return false;">
+                <i class="ph ph-link"></i> Connect
+            </a>
+            <a href="#" class="drive-menu-opt" onclick="SugarTrackGoogle.saveToDrive(); return false;">
+                <i class="ph ph-cloud-arrow-up"></i> Backup Data
+            </a>
+            <a href="#" class="drive-menu-opt" onclick="SugarTrackGoogle.loadFromDrive(); return false;">
+                <i class="ph ph-cloud-arrow-down"></i> Restore Data
+            </a>
+        </div>
+    </div>
         </div>
     </header>
     <!-- sidebar -->
@@ -432,6 +459,17 @@
                 <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
             </div>
         </div>
+    <!-- UPDATED: Profile Avatar & Connect Wrapper -->
+    <div class="sidebar-profile-wrapper">
+        <div class="user-avatar-target">
+            <i class="ph ph-user"></i>
+        </div>
+        <div class="profile-text-container">
+            <span class="profile-name" id="sidebarProfileName">Account</span>
+            <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="SugarTrackGoogle.signIn()">Connect Drive</button>
+        </div>
+    </div>
+</div>
     </aside>
 
     <!-- Main Dashboard Area -->
@@ -443,6 +481,25 @@
                     <p>Complete history of your recorded glucose readings.</p>
                 </div>
                 <div class="header-actions">
+
+
+    <!-- Google Drive Sync & Backup Controls -->
+    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="SugarTrackGoogle.signIn()">
+        <i class="ph ph-google-logo"></i> Connect Drive
+    </button>
+    <button class="btn-outline desktop-only" onclick="SugarTrackGoogle.saveToDrive()" title="Backup to Drive">
+        <i class="ph ph-cloud-arrow-up"></i>
+    </button>
+    <button class="btn-outline desktop-only" onclick="SugarTrackGoogle.loadFromDrive()" title="Restore from Drive">
+        <i class="ph ph-cloud-arrow-down"></i>
+    </button>
+
+
+
+
+
+
+
                                         <button class="btn-outline desktop-only" onclick="window.location.reload();">
                         <i class="ph ph-arrows-clockwise"></i> Refresh Data
                     </button>

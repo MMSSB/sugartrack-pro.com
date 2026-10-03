@@ -944,15 +944,48 @@ html.sidebar-collapsed .theme-selector {
         flex-shrink: 0;
         z-index: 40;
     }
-
+/* 
     .icon-btn {
         font-size: 20px;
         color: var(--text-main);
         display: flex;
         align-items: center;
         justify-content: center;
+    } */
+/* --- ENHANCED MOBILE HEADER BUTTONS --- */
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50px;
+        background: var(--bg-canvas);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        padding: 0;
     }
 
+    .icon-btn:hover {
+        background: var(--bg-hover);
+        border-color: var(--text-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .icon-btn:active {
+        transform: scale(0.92);
+    }
+    
+    /* Ensure the drive avatar button matches the exact dimensions */
+    #mobileDriveBtn {
+        border-radius: 50%; /* Keeps the profile picture perfectly round */
+        overflow: hidden;
+    }
     /* Dashboard Wrapping */
     .dashboard-wrapper {
         border-radius: 0;
@@ -1670,10 +1703,9 @@ body, .dashboard-wrapper, .stat-card, .chart-card,  .settings-card, input {
                 border-radius: 0;
                 z-index: 99999;
                 background: var(--bg-canvas);
+                
             }
-
-
-                            .github-repo-card {
+                .github-repo-card {
 
     background: var(--bg-dashboard);
     border: 1px solid var(--border-color);
@@ -1784,3 +1816,169 @@ body, .dashboard-wrapper, .stat-card, .chart-card,  .settings-card, input {
     white-space: normal;
     word-break: break-word;
 } */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- SIDEBAR AVATAR & CONNECT BUTTON --- */
+.sidebar-profile-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius-btn);
+    transition: all 0.15s ease;
+}
+
+.profile-text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.user-avatar-target {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.profile-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-connect-btn {
+    font-size: 11px;
+    color: var(--accent-blue);
+    font-weight: 600;
+    text-align: left;
+    padding: 0;
+    transition: opacity 0.2s;
+}
+
+.sidebar-connect-btn:hover {
+    opacity: 0.7;
+}
+
+/* FIX: Centering when Sidebar is Collapsed */
+html.sidebar-collapsed .sidebar-profile-wrapper {
+    justify-content: center;
+    padding: 8px;
+}
+
+html.sidebar-collapsed .profile-text-container {
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- DRIVE ACCOUNT DROPDOWN STYLES --- */
+.drive-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.drive-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 12px;
+    background: var(--bg-dashboard);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow-float);
+    display: flex;
+    flex-direction: column;
+    min-width: 170px;
+    padding: 8px;
+    z-index: 100;
+    
+    /* Animation Base Styles */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transform-origin: top right;
+    transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.drive-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.drive-dropdown-menu .drive-menu-opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.drive-dropdown-menu .drive-menu-opt i {
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+/* Hover States */
+.drive-dropdown-menu .drive-menu-opt:hover {
+    background: var(--bg-hover);
+}

@@ -31,6 +31,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (displayUserName) displayUserName.textContent = firstName;
                 if (displayUserFullName) displayUserFullName.textContent = fullName;
                 document.documentElement.classList.add('has-user');
+                // ADD THESE TWO LINES TO UPDATE SIDEBAR IMMEDIATELY:
+                if (typeof SugarTrackGoogle !== 'undefined') {
+                    SugarTrackGoogle.updateUI();
+                }
+            }
+        });
+    }
+    // --- MOBILE DRIVE DROPDOWN ---
+    const mobileDriveBtn = document.getElementById('mobileDriveBtn');
+    const mobileDriveMenu = document.getElementById('mobileDriveMenu');
+    if (mobileDriveBtn && mobileDriveMenu) {
+        mobileDriveBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            mobileDriveMenu.classList.toggle('show');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileDriveBtn.contains(e.target) && !mobileDriveMenu.contains(e.target)) {
+                mobileDriveMenu.classList.remove('show');
             }
         });
     }
