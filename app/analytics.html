@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Analytics - SugarTrack Pro</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+    </script>
+    <script src="theme.js"></script>
+    
+    <link rel="icon" type="image/x-icon" href="images/stpro-logo.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Chart.js & Annotation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="load-page.js"></script>
+    
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="google.js"></script>
+
+    <style>
+        /* Mobile Flex Collapse Fixes */
+        .chart-card, 
+        .insights-card, 
+        .stat-card,
+        .dashboard-scroll-area > div {
+            flex-shrink: 0 !important;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .breakdown-card {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: var(--radius-btn);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .breakdown-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .breakdown-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .breakdown-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .breakdown-stats {
+            text-align: right;
+        }
+
+        .breakdown-stats .val {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .breakdown-stats .target {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .smart-summary {
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: var(--radius-card);
+            padding: 16px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .smart-summary i {
+            font-size: 24px;
+            color: #0ea5e9;
+            margin-top: 2px;
+        }
+
+        .smart-summary-text h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .smart-summary-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                min-height: 240px !important; /* Forces chart to hold its height */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Top Bar -->
+    <header class="mobile-header">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-activity"></i></div>
+            <span class="brand-text">SugarTrack</span>
+        </div>
+        <div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+            <div class="theme-dropdown-container">
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+            <!-- Google Drive Dropdown -->
+            <div class="drive-dropdown-container">
+                <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
+                    <i class="ph ph-google-logo"></i>
+                </button>
+                <div class="drive-dropdown-menu" id="mobileDriveMenu">
+                    <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
+                        <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
+                    </div>
+                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="SugarTrackGoogle.signIn(); return false;">
+                        <i class="ph ph-link"></i> Connect
+                    </a>
+                    <a href="#" class="drive-menu-opt" onclick="SugarTrackGoogle.saveToDrive(); return false;">
+                        <i class="ph ph-cloud-arrow-up"></i> Backup Data
+                    </a>
+                    <a href="#" class="drive-menu-opt" onclick="SugarTrackGoogle.loadFromDrive(); return false;">
+                        <i class="ph ph-cloud-arrow-down"></i> Restore Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-activity"></i></div>
+                <span class="brand-text">SugarTrack</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="dashboard" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="readings" class="nav-item"><i class="ph ph-notepad"></i> <span>Readings</span></a>
+                <a href="analytics" class="nav-item active"><i class="ph-fill ph-chart-line-up"></i> <span>Analytics</span></a>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items">
+                <a href="settings" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+            <div class="sidebar-profile-wrapper">
+                <div class="user-avatar-target"><i class="ph ph-user"></i></div>
+                <div class="profile-text-container">
+                    <span class="profile-name" id="sidebarProfileName">Account</span>
+                    <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="SugarTrackGoogle.signIn()">Connect Drive</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+            
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Clinical Analytics</h1>
+                    <p>Advanced metrics, HbA1c estimation, and trend analysis.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="SugarTrackGoogle.signIn()">
+                        <i class="ph ph-google-logo"></i> Connect Drive
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="window.location.reload();">
+                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+                    </button>
+                </div>
+            </header>
+
+            <!-- Smart Summary Box -->
+            <div class="smart-summary" id="smartSummaryBox" style="display: none;">
+                <i class="ph-fill ph-sparkle"></i>
+                <div class="smart-summary-text">
+                    <h3 id="summaryTitle">Analyzing your data...</h3>
+                    <p id="summaryText">Processing your clinical logs to generate insights.</p>
+                </div>
+            </div>
+<br>
+            <!-- Top Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" style="border-left: 4px solid var(--primary);">
+                    <div class="stat-header">
+                        <span>Estimated HbA1c</span>
+                        <i class="ph-fill ph-flask" style="color: var(--primary);"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valA1c">--</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Avg Glucose (90d)</span>
+                        <i class="ph ph-chart-pie-slice"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valAvg">--</span>
+                        <span class="stat-unit">mg/dL</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Glucose Mgmt Indicator</span>
+                        <i class="ph ph-activity"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valGmi">--</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Total Logs</span>
+                        <i class="ph ph-database"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valCount">0</span>
+                        <span class="stat-unit">entries</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Width AGP Chart -->
+            <div class="chart-card">
+                <div class="card-title">
+                    <span>Ambulatory Glucose Profile (AGP)</span>
+                    <div class="legend">
+                        <div class="legend-item"><div class="dot target" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;"></div> Target Zone</div>
+                    </div>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; margin-top: -8px;">
+                    A 24-hour composite scatter plot of all your readings to expose recurring dawn-phenomenon spikes or post-lunch crashes.
+                </p>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="agpChart"></canvas>
+                </div>
+            </div>
+<br>
+            <div class="analytics-grid">
+                <!-- Day of Week Trends -->
+                <div class="chart-card">
+                    <div class="card-title">Day of Week Averages</div>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="dowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Context/Mealtime Breakdown -->
+                <div class="insights-card">
+                    <div class="card-title">Time of Day Breakdown</div>
+                    <div class="breakdown-list" id="mealBreakdownContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Floating Mobile Bottom Navigation -->
+    <div class="mobile-nav-dock">
+        <nav class="mobile-floating-pill">
+            <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <a href="readings"><i class="ph ph-notepad"></i><span>Readings</span></a>
+            <a href="analytics" class="active"><i class="ph-fill ph-chart-line-up"></i><span>Analytics</span></a>
+            <a href="settings"><i class="ph ph-gear"></i><span>Settings</span></a>
+        </nav>
+        <button id="mobileLogBtn" class="floating-fab-btn" title="Add Log">
+            <i class="ph ph-plus"></i>
+        </button>
+    </div>
+
+    <!-- Draggable Mobile Menu Bottom Sheet (If needed) -->
+    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
+        <div class="bottom-sheet" id="menuSheet">
+            <div class="drag-handle-wrapper"><div class="drag-handle"></div></div>
+            <div class="sheet-header">
+                <h2>Menu</h2>
+                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="menu-list no-scrollbar" style="overflow-y: auto;">
+                <a href="dashboard" class="menu-item"><i class="ph ph-activity"></i> Dashboard</a>
+                <a href="readings" class="menu-item"><i class="ph ph-stethoscope"></i> Readings</a>
+                <a href="analytics" class="menu-item active"><i class="ph ph-chart-line-up"></i> Analytics</a>
+                <a href="settings" class="menu-item"><i class="ph ph-gear"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Log Modal -->
+    <div id="logSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="logSheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header">
+                <h2>Log Glucose</h2>
+                <button class="close-btn" id="closeLogBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="logForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="logDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="logTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Glucose Level (mg/dL)</label>
+                    <input type="number" id="logGlucose" placeholder="e.g. 110" required min="10" max="600">
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="logNotes" class="responsive-textarea" placeholder="E.g., Fasting, Meds taken, etc."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Save Entry</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Base Script for generic UI (sidebar, theme, mobile sheets) -->
+    <script src="script.js"></script>
+
+    <!-- Smart Analytics Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const readings = JSON.parse(localStorage.getItem('glucoseReadings')) || [];
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            const gridColor = isDark ? '#27272a' : '#e5e7eb';
+            const textColor = isDark ? '#a1a1aa' : '#6b7280';
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#0ea5e9';
+
+            if (readings.length === 0) {
+                document.getElementById('mealBreakdownContainer').innerHTML = `
+                    <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px;">
+                        Log more data to generate insights.
+                    </div>
+                `;
+                return;
+            }
+
+            // 1. High-Level Calculations
+            const sum = readings.reduce((acc, curr) => acc + curr.glucose, 0);
+            const avg = sum / readings.length;
+            const inRangeCount = readings.filter(r => r.glucose >= 70 && r.glucose <= 180).length;
+            const tir = Math.round((inRangeCount / readings.length) * 100);
+
+            // Clinical Formulas
+            const eA1c = (avg + 46.7) / 28.7; // Estimated A1c
+            const gmi = 3.31 + (0.02392 * avg); // Glucose Management Indicator
+
+            document.getElementById('valAvg').textContent = Math.round(avg);
+            document.getElementById('valA1c').textContent = eA1c.toFixed(1);
+            document.getElementById('valGmi').textContent = gmi.toFixed(1);
+            document.getElementById('valCount').textContent = readings.length;
+
+            // 2. Smart Summary Generation
+            const summaryBox = document.getElementById('smartSummaryBox');
+            const summaryTitle = document.getElementById('summaryTitle');
+            const summaryText = document.getElementById('summaryText');
+            
+            summaryBox.style.display = 'flex';
+            if (eA1c < 6.5 && tir > 70) {
+                summaryBox.style.background = 'rgba(16, 185, 129, 0.1)';
+                summaryBox.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                summaryBox.querySelector('i').className = 'ph-fill ph-check-circle';
+                summaryBox.querySelector('i').style.color = '#10b981';
+                summaryTitle.textContent = 'Excellent Glucose Control';
+                summaryText.textContent = `Your estimated HbA1c is ${eA1c.toFixed(1)}% with a Time in Range of ${tir}%. You are hitting clinical targets.`;
+            } else if (eA1c >= 7.5 || tir < 50) {
+                summaryBox.style.background = 'rgba(239, 68, 68, 0.1)';
+                summaryBox.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                summaryBox.querySelector('i').className = 'ph-fill ph-warning-circle';
+                summaryBox.querySelector('i').style.color = '#ef4444';
+                summaryTitle.textContent = 'Attention Required';
+                summaryText.textContent = `Your Time in Range has dropped to ${tir}%. Consider reviewing your routine with your healthcare provider.`;
+            } else {
+                summaryTitle.textContent = 'Moderate Glucose Control';
+                summaryText.textContent = `Your estimated HbA1c is ${eA1c.toFixed(1)}%. There is room for improvement to reach the >70% Time in Range clinical goal.`;
+            }
+
+            // 3. AGP Chart (Scatter with Target Band Annotation)
+            const scatterData = readings.map(r => {
+                let [h, m] = r.time.split(':');
+                return {
+                    x: parseInt(h, 10) + (parseInt(m, 10) / 60),
+                    y: r.glucose,
+                    rawTime: r.time
+                };
+            });
+
+            const pointColors = scatterData.map(val => {
+                if (val.y > 180) return '#eab308'; 
+                if (val.y < 70) return '#ef4444';  
+                return primaryColor;                
+            });
+
+            new Chart(document.getElementById('agpChart'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Reading',
+                        data: scatterData,
+                        backgroundColor: pointColors,
+                        borderColor: isDark ? '#18181b' : '#ffffff',
+                        borderWidth: 1.5,
+                        pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear', position: 'bottom', min: 0, max: 24,
+                            ticks: {
+                                stepSize: 4, color: textColor,
+                                callback: (val) => {
+                                    if(val === 0 || val === 24) return '12 AM';
+                                    if(val === 12) return '12 PM';
+                                    return val > 12 ? `${val - 12} PM` : `${val} AM`;
+                                }
+                            },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            min: 30, max: Math.max(350, ...scatterData.map(d => d.y) + 20),
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        annotation: {
+                            annotations: {
+                                targetZone: {
+                                    type: 'box',
+                                    yMin: 70,
+                                    yMax: 180,
+                                    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.08)',
+                                    borderWidth: 0,
+                                    drawTime: 'beforeDatasetsDraw'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#18181b' : '#ffffff',
+                            titleColor: isDark ? '#f4f4f5' : '#111827',
+                            bodyColor: textColor,
+                            borderColor: gridColor,
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: (ctx) => `${ctx.raw.y} mg/dL at ${formatTime12Hour(ctx.raw.rawTime)}`
+                            }
+                        }
+                    }
+                }
+            });
+
+            function formatTime12Hour(timeStr) {
+                let [h, m] = timeStr.split(':');
+                h = parseInt(h, 10);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return `${h}:${m} ${ampm}`;
+            }
+
+            // 4. Day of Week Averages (Bar Chart - Fixed Zero Baseline)
+            const dowSums = [0, 0, 0, 0, 0, 0, 0];
+            const dowCounts = [0, 0, 0, 0, 0, 0, 0];
+            readings.forEach(r => {
+                const dayIdx = new Date(r.date).getDay();
+                dowSums[dayIdx] += r.glucose;
+                dowCounts[dayIdx]++;
+            });
+
+            const dowAverages = dowSums.map((s, i) => dowCounts[i] > 0 ? Math.round(s / dowCounts[i]) : 0);
+            const orderedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const orderedAverages = [dowAverages[1], dowAverages[2], dowAverages[3], dowAverages[4], dowAverages[5], dowAverages[6], dowAverages[0]];
+            
+            const barColors = orderedAverages.map(val => val > 180 ? '#eab308' : (val > 0 ? primaryColor : gridColor));
+
+            new Chart(document.getElementById('dowChart'), {
+                type: 'bar',
+                data: {
+                    labels: orderedDays,
+                    datasets: [{ data: orderedAverages, backgroundColor: barColors, borderRadius: 6 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            min: 0, /* Explicitly forces Y axis to start at 0 */
+                            max: 250, 
+                            grid: { color: gridColor }, 
+                            ticks: { color: textColor } 
+                        },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: textColor } 
+                        }
+                    }
+                }
+            });
+
+            // 5. Time of Day Breakdown
+            const timeSlots = {
+                'Morning / Fasting (5AM - 11AM)': { min: 5, max: 11, target: '70-130', sum: 0, count: 0, inRange: 0 },
+                'Afternoon (11AM - 5PM)': { min: 11, max: 17, target: '70-180', sum: 0, count: 0, inRange: 0 },
+                'Evening / Night (5PM - 5AM)': { min: 17, max: 24, target: '70-180', sum: 0, count: 0, inRange: 0 }
+            };
+
+            readings.forEach(r => {
+                const h = parseInt(r.time.split(':')[0], 10);
+                for (const [name, slot] of Object.entries(timeSlots)) {
+                    if ((h >= slot.min && h < slot.max) || (slot.min === 17 && (h >= 17 || h < 5))) {
+                        slot.sum += r.glucose;
+                        slot.count++;
+                        const maxTarget = slot.target.includes('130') ? 130 : 180;
+                        if (r.glucose >= 70 && r.glucose <= maxTarget) slot.inRange++;
+                    }
+                }
+            });
+
+            const breakdownContainer = document.getElementById('mealBreakdownContainer');
+            Object.entries(timeSlots).forEach(([name, data]) => {
+                const avgSlot = data.count > 0 ? Math.round(data.sum / data.count) : 0;
+                const tirSlot = data.count > 0 ? Math.round((data.inRange / data.count) * 100) : 0;
+                
+                let statusColor = '#10b981', statusBg = 'rgba(16, 185, 129, 0.15)';
+                const maxTarget = data.target.includes('130') ? 130 : 180;
+                
+                if (avgSlot > maxTarget) { statusColor = '#eab308'; statusBg = 'rgba(234, 179, 8, 0.15)'; } 
+                else if (avgSlot < 70 && avgSlot > 0) { statusColor = '#ef4444'; statusBg = 'rgba(239, 68, 68, 0.15)'; }
+
+                breakdownContainer.innerHTML += `
+                    <div class="breakdown-card">
+                        <div class="breakdown-info">
+                            <h4>${name}</h4>
+                            <p>Target: ${data.target} mg/dL</p>
+                        </div>
+                        <div class="breakdown-stats">
+                            <div class="val">${avgSlot > 0 ? avgSlot : '--'} <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">mg/dL</span></div>
+                            <div class="target" style="color: ${statusColor}; background: ${statusBg};">
+                                ${data.count > 0 ? tirSlot + '% in range' : 'No data'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    const agpChart = Chart.getChart('agpChart');
+                    const dowChart = Chart.getChart('dowChart');
+                    if(agpChart) agpChart.resize();
+                    if(dowChart) dowChart.resize();
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

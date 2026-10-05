@@ -60,6 +60,12 @@
     font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
+.sidebar-divider {
+  border: 0;
+  height: 1px;
+  background-color: var(--text-main);
+  margin: 15px 10px; /* Adjust spacing around the line */
+}
 
 html,
 body {
