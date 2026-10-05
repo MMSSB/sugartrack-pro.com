@@ -7,7 +7,7 @@
   **Master Your Glucose. Master Your Life.**  
   A beautifully crafted, fully responsive clinical tracker designed for absolute privacy and built for offline speed.
   
-  [![Version](https://img.shields.io/badge/Version-v1.0.0_Pro-2563eb?style=for-the-badge)]()
+  [![Version](https://img.shields.io/badge/Version-Remastered-v1.2.0_Pro-2563eb?style=for-the-badge)]()
   [![Platform](https://img.shields.io/badge/Platform-Web_%7C_PWA-10b981?style=for-the-badge)]()
   [![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)]()
   
@@ -71,7 +71,7 @@ SugarTrack is built with performance and independence in mind. It uses zero heav
 
 ## 🚀 Version History
 
-### **v1.0.0 Pro (Current Release)**
+### **v1.2.0 Pro (Current Release)**
 - Initial Pro architecture release with responsive Square UI System.
 - Added fully bilingual Clinical PDF Exports.
 - Implemented Local-First data storage and offline caching.
