@@ -233,14 +233,36 @@
                     <h1>Clinical Analytics</h1>
                     <p>Advanced metrics, HbA1c estimation, and trend analysis.</p>
                 </div>
-                <div class="header-actions">
+                <!-- <div class="header-actions">
                     <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="SugarTrackGoogle.signIn()">
                         <i class="ph ph-google-logo"></i> Connect Drive
                     </button>
                     <button class="btn-outline desktop-only" onclick="window.location.reload();">
                         <i class="ph ph-arrows-clockwise"></i> Refresh Data
                     </button>
-                </div>
+                </div> -->
+                <div class="header-actions">
+    <!-- Google Drive Sync & Backup Controls -->
+    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="SugarTrackGoogle.signIn()">
+        <i class="ph ph-google-logo"></i> Connect Drive
+    </button>
+    <button class="btn-outline desktop-only" onclick="SugarTrackGoogle.saveToDrive()" title="Backup to Drive">
+        <i class="ph ph-cloud-arrow-up"></i>
+    </button>
+    <button class="btn-outline desktop-only" onclick="SugarTrackGoogle.loadFromDrive()" title="Restore from Drive">
+        <i class="ph ph-cloud-arrow-down"></i>
+    </button>
+
+    <button class="btn-outline desktop-only" onclick="window.location.reload();">
+        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+    </button>
+    <button class="btn-outline desktop-only" id="openExportBtn">
+        <i class="ph ph-export"></i> Export
+    </button>
+    <button class="btn-primary desktop-only" id="openLogBtn">
+        <i class="ph ph-plus"></i> Add Log
+    </button>
+</div>
             </header>
 
             <!-- Smart Summary Box -->
