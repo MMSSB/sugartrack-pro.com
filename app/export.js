@@ -228,24 +228,62 @@ document.addEventListener('DOMContentLoaded', () => {
         const avg = Math.round(readings.reduce((acc, curr) => acc + curr.glucose, 0) / readings.length);
         const inRange = Math.round((readings.filter(r => r.glucose >= 70 && r.glucose <= 180).length / readings.length) * 100);
 
-        // Build Table Rows cleanly
+        // // Build Table Rows cleanly
+        // let tableRows = '';
+        // readings.forEach(r => {
+        //     const status = getStatus(r.glucose);
+        //     const dateObj = new Date(r.date);
+        //     const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+            
+        //     tableRows += `
+        //         <tr style="border-bottom: 1px solid #e5e7eb;">
+        //             <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap; vertical-align: middle;">${formattedDate}</td>
+        //             <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap; vertical-align: middle;">${formatTime12Hour(r.time)}</td>
+        //             <td style="width: 15%; padding: 10px 8px; font-size: 13px; font-weight: bold; white-space: nowrap; vertical-align: middle;">${r.glucose} <span style="font-size:9px; font-weight:normal; color:#6b7280;">mg/dL</span></td>
+        //             <td style="width: 18%; padding: 10px 8px; font-size: 11px; font-weight: bold; color: ${status.color}; white-space: nowrap; vertical-align: middle; line-height: 1.3;">${status.text}</td>
+        //             <td style="width: 37%; padding: 10px 8px; font-size: 12px; color: #4b5563; word-break: break-word; overflow-wrap: break-word; vertical-align: middle; line-height: 1.4;" dir="auto">${r.comment || '-'}</td>
+        //         </tr>
+        //     `;
+        // });
+
+
+
+        // // Build Table Rows cleanly
+        // let tableRows = '';
+        // readings.forEach(r => {
+        //     const status = getStatus(r.glucose);
+        //     const dateObj = new Date(r.date);
+        //     const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+            
+        //     // Added page-break-inside: avoid; and break-inside: avoid; to prevent splitting
+        //     tableRows += `
+        //         <tr style="border-bottom: 1px solid #e5e7eb; page-break-inside: avoid; break-inside: avoid;">
+        //             <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap; vertical-align: middle;">${formattedDate}</td>
+        //             <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap; vertical-align: middle;">${formatTime12Hour(r.time)}</td>
+        //             <td style="width: 15%; padding: 10px 8px; font-size: 13px; font-weight: bold; white-space: nowrap; vertical-align: middle;">${r.glucose} <span style="font-size:9px; font-weight:normal; color:#6b7280;">mg/dL</span></td>
+        //             <td style="width: 18%; padding: 10px 8px; font-size: 11px; font-weight: bold; color: ${status.color}; white-space: nowrap; vertical-align: middle; line-height: 1.3;">${status.text}</td>
+        //             <td style="width: 37%; padding: 10px 8px; font-size: 12px; color: #4b5563; word-break: break-word; overflow-wrap: break-word; vertical-align: middle; line-height: 1.4;" dir="auto">${r.comment || '-'}</td>
+        //         </tr>
+        //     `;
+        // });
+// Build Table Rows cleanly
         let tableRows = '';
         readings.forEach(r => {
             const status = getStatus(r.glucose);
             const dateObj = new Date(r.date);
             const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
             
+            // Removed word-break and overflow-wrap from the Notes <td> to preserve Arabic text shaping
             tableRows += `
-                <tr style="border-bottom: 1px solid #e5e7eb;">
+                <tr style="border-bottom: 1px solid #e5e7eb; page-break-inside: avoid; break-inside: avoid;">
                     <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap; vertical-align: middle;">${formattedDate}</td>
                     <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap; vertical-align: middle;">${formatTime12Hour(r.time)}</td>
                     <td style="width: 15%; padding: 10px 8px; font-size: 13px; font-weight: bold; white-space: nowrap; vertical-align: middle;">${r.glucose} <span style="font-size:9px; font-weight:normal; color:#6b7280;">mg/dL</span></td>
                     <td style="width: 18%; padding: 10px 8px; font-size: 11px; font-weight: bold; color: ${status.color}; white-space: nowrap; vertical-align: middle; line-height: 1.3;">${status.text}</td>
-                    <td style="width: 37%; padding: 10px 8px; font-size: 12px; color: #4b5563; word-break: break-word; overflow-wrap: break-word; vertical-align: middle; line-height: 1.4;" dir="auto">${r.comment || '-'}</td>
+                    <td style="width: 37%; padding: 10px 8px; font-size: 12px; color: #4b5563; white-space: normal; vertical-align: middle; line-height: 1.4;" dir="auto">${r.comment || '-'}</td>
                 </tr>
             `;
         });
-
         // Assemble PDF HTML Document
         const pdfContainer = document.createElement('div');
         pdfContainer.style.padding = '30px';
@@ -325,14 +363,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const oldClass = btnIcon ? btnIcon.className : '';
         if (btnIcon) btnIcon.className = 'ph ph-spinner fa-spin';
 
-        const opt = {
+        // const opt = {
+        //     margin:       0.3,
+        //     filename:     `SugarTrack_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+        //     image:        { type: 'jpeg', quality: 1 },
+        //     html2canvas:  { scale: 2, useCORS: true, logging: false },
+        //     jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        // };
+const opt = {
             margin:       0.3,
             filename:     `SugarTrack_Report_${new Date().toISOString().split('T')[0]}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Ensures it reads the CSS break rules
         };
-
         html2pdf().set(opt).from(pdfContainer).save().then(() => {
             document.body.removeChild(printWrapper);
             if (btnIcon) btnIcon.className = oldClass;
