@@ -141,7 +141,18 @@
     </style>
 </head>
 <body>
-
+    <!-- Welcome Modal -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-activity"></i></div>
+            <h2>Welcome to SugarTrack</h2>
+            <p>What is your name?</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <button type="submit" class="btn-primary">Get Started</button>
+            </form>
+        </div>
+    </div>
     <!-- Mobile Top Bar -->
     <header class="mobile-header">
         <div class="brand">
@@ -420,7 +431,27 @@
             </form>
         </div>
     </div>
-    
+    <!-- Export Menu Modal/Sheet -->
+<div id="exportSheetOverlay" class="sheet-overlay">
+    <div class="modal-card bottom-sheet" id="exportSheet">
+        <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+        <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+            <h2 style="font-size: 18px;">Export Data</h2>
+            <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Clinical Report (PDF)
+            </button>
+            <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+            </button>
+            <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+            </button>
+        </div>
+    </div>
+</div>
     <!-- Base Script for generic UI (sidebar, theme, mobile sheets) -->
     <script src="script.js"></script>
 
